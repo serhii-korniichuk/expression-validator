@@ -10,12 +10,15 @@ type InnerInputProps = Pick<
   "placeholder" | "onChange" | "isInvalid" | "onKeyDown"
 > & {
   value?: string;
+  isValidated?: boolean;
 };
 
 type Props = HighlightProps & InnerInputProps;
 
 export const HighlightInput: FC<Props> = ({
   value = "",
+  isValidated = false,
+  isInvalid,
   highlightIndex,
   ...rest
 }) => {
@@ -29,8 +32,11 @@ export const HighlightInput: FC<Props> = ({
       </HighlightText>
       <BaseInput
         {...rest}
-        className={classNames(styles.input, { [styles.isSuccess]: false })}
+        className={classNames(styles.input, {
+          [styles.isSuccess]: isValidated && !isInvalid,
+        })}
         value={value}
+        isInvalid={isInvalid}
       />
     </Box>
   );

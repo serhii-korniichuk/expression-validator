@@ -25,7 +25,7 @@ const ErrorMessages = ({ errors }: Pick<ErrorsMessageProps, "errors">) => {
 };
 
 export const StatusLogs = ({ errors, isValidated }: ErrorsMessageProps) => {
-  if (isValidated) {
+  if (!isValidated) {
     return (
       <MessageRow
         icon={InfoOutlineIcon}

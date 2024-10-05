@@ -8,7 +8,7 @@ import { Console } from "../Console";
 import { HighlightInput } from "../HighlightInput";
 
 export const ExpressionValidator = () => {
-  const [isValidated, setIsValidated] = useState(true);
+  const [isValidated, setIsValidated] = useState(false);
 
   const [expression, setExpression] = useState("");
 
@@ -17,12 +17,12 @@ export const ExpressionValidator = () => {
   const handleValidate = () => {
     const validationErrors = validateExpression(expression);
     setErrors(validationErrors);
-    setIsValidated(false);
+    setIsValidated(true);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\s/g, "");
-    setIsValidated(true);
+    setIsValidated(false);
     setErrors([]);
     setExpression(value);
   };
@@ -59,11 +59,16 @@ export const ExpressionValidator = () => {
           value={expression}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
+          isValidated={isValidated}
           isInvalid={errors && errors?.length > 0}
           highlightIndex={errors?.[0]?.position}
         />
 
-        <Button size="lg" onClick={handleValidate} isDisabled={!expression}>
+        <Button
+          size="lg"
+          onClick={handleValidate}
+          isDisabled={!expression || isValidated}
+        >
           {"Check".toUpperCase()}
         </Button>
 
