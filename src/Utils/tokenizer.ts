@@ -2,7 +2,7 @@ type TokenType =
   | "NUMBER"
   | "VARIABLE"
   | "OPERATOR"
-  | "PARENTHESIS"
+  | "BRACKETS"
   | "FUNCTION"
   | "ERROR";
 
@@ -38,7 +38,7 @@ export const tokenize = (input: string): Token[] => {
     } else if (OPERATOR_REGEX.test(value)) {
       tokens.push({ type: "OPERATOR", value, position });
     } else if (PARENTHESIS_REGEX.test(value)) {
-      tokens.push({ type: "PARENTHESIS", value, position });
+      tokens.push({ type: "BRACKETS", value, position });
     } else if (COMMA_REGEX.test(value)) {
       tokens.push({ type: "FUNCTION", value, position });
     } else {

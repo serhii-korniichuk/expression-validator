@@ -6,8 +6,8 @@ enum State {
   NUMBER = "NUMBER",
   VARIABLE = "VARIABLE",
   OPERATOR = "OPERATOR",
-  OPEN_PARENTHESIS = "OPEN_PARENTHESIS",
-  CLOSE_PARENTHESIS = "CLOSE_PARENTHESIS",
+  OPEN_BRACKET = "OPEN_BRACKET",
+  CLOSE_BRACKET = "CLOSE_BRACKET",
   FUNCTION = "FUNCTION",
   FUNCTION_ARGUMENT = "FUNCTION_ARGUMENT",
   ERROR = "ERROR",
@@ -19,6 +19,7 @@ const CLOSE_PARENTHESIS = ")";
 export const parse = (tokens: Token[]): ValidationError | null => {
   let state = State.START;
   let openParenthesisCount = 0;
+  let lastOpenParenthesisPosition = -1; // To track the last unmatched opening parenthesis
 
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
@@ -34,11 +35,12 @@ export const parse = (tokens: Token[]): ValidationError | null => {
         } else if (token.type === "OPERATOR" && token.value === "-") {
           state = State.OPERATOR;
         } else if (
-          token.type === "PARENTHESIS" &&
+          token.type === "BRACKETS" &&
           token.value === OPEN_PARENTHESIS
         ) {
-          state = State.OPEN_PARENTHESIS;
+          state = State.OPEN_BRACKET;
           openParenthesisCount++;
+          lastOpenParenthesisPosition = token.position;
         } else {
           return {
             position: token.position,
@@ -48,9 +50,10 @@ export const parse = (tokens: Token[]): ValidationError | null => {
         break;
 
       case State.FUNCTION:
-        if (token.type === "PARENTHESIS" && token.value === OPEN_PARENTHESIS) {
+        if (token.type === "BRACKETS" && token.value === OPEN_PARENTHESIS) {
           state = State.FUNCTION_ARGUMENT;
           openParenthesisCount++;
+          lastOpenParenthesisPosition = token.position;
         } else {
           return {
             position: token.position,
@@ -61,7 +64,7 @@ export const parse = (tokens: Token[]): ValidationError | null => {
 
       case State.FUNCTION_ARGUMENT:
         if (token.type === "NUMBER" || token.type === "VARIABLE") {
-          state = State.NUMBER; // Move to NUMBER state after argument
+          state = State.NUMBER;
         } else {
           return {
             position: token.position,
@@ -72,15 +75,15 @@ export const parse = (tokens: Token[]): ValidationError | null => {
 
       case State.NUMBER:
       case State.VARIABLE:
-        if (i === tokens.length - 1) {
-          return null;
+        if (i === tokens.length) {
+          break;
         } else if (token.type === "OPERATOR") {
           state = State.OPERATOR;
         } else if (
-          token.type === "PARENTHESIS" &&
+          token.type === "BRACKETS" &&
           token.value === CLOSE_PARENTHESIS
         ) {
-          state = State.CLOSE_PARENTHESIS;
+          console.log({ openParenthesisCount });
           openParenthesisCount--;
           if (openParenthesisCount < 0) {
             return {
@@ -88,6 +91,7 @@ export const parse = (tokens: Token[]): ValidationError | null => {
               message: "Extra closing parenthesis",
             };
           }
+          state = State.CLOSE_BRACKET;
         } else {
           return {
             position: token.position,
@@ -104,11 +108,12 @@ export const parse = (tokens: Token[]): ValidationError | null => {
         } else if (token.type === "FUNCTION") {
           state = State.FUNCTION;
         } else if (
-          token.type === "PARENTHESIS" &&
+          token.type === "BRACKETS" &&
           token.value === OPEN_PARENTHESIS
         ) {
-          state = State.OPEN_PARENTHESIS;
+          state = State.OPEN_BRACKET;
           openParenthesisCount++;
+          lastOpenParenthesisPosition = token.position;
         } else {
           return {
             position: token.position,
@@ -117,7 +122,7 @@ export const parse = (tokens: Token[]): ValidationError | null => {
         }
         break;
 
-      case State.OPEN_PARENTHESIS:
+      case State.OPEN_BRACKET:
         if (token.type === "NUMBER") {
           state = State.NUMBER;
         } else if (token.type === "VARIABLE") {
@@ -132,17 +137,19 @@ export const parse = (tokens: Token[]): ValidationError | null => {
         }
         break;
 
-      case State.CLOSE_PARENTHESIS:
-        if (openParenthesisCount < 0) {
-          return {
-            position: token.position,
-            message: "Extra closing parenthesis",
-          };
-        }
-        if (token.type === "OPERATOR") {
+      case State.CLOSE_BRACKET:
+        if (token.type === "BRACKETS" && token.value === CLOSE_PARENTHESIS) {
+          openParenthesisCount--;
+          if (openParenthesisCount < 0) {
+            return {
+              position: token.position,
+              message: "Extra closing parenthesis",
+            };
+          }
+        } else if (token.type === "OPERATOR") {
           state = State.OPERATOR;
         } else if (i === tokens.length - 1) {
-          return null;
+          break;
         } else {
           return {
             position: token.position,
@@ -158,7 +165,7 @@ export const parse = (tokens: Token[]): ValidationError | null => {
 
   if (openParenthesisCount > 0) {
     return {
-      position: tokens[tokens.length - 1].position,
+      position: lastOpenParenthesisPosition,
       message: "Unmatched opening parenthesis",
     };
   }
