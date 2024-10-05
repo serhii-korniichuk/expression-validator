@@ -170,5 +170,14 @@ export const parse = (tokens: Token[]): ValidationError | null => {
     };
   }
 
+  const lastToken = tokens[tokens.length - 1];
+
+  if (lastToken.type === "OPERATOR") {
+    return {
+      position: lastToken.position,
+      message: "Expression cannot end with an operator",
+    };
+  }
+
   return null;
 };
