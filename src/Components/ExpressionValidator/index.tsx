@@ -3,9 +3,9 @@ import { ChangeEvent, useState } from "react";
 import {
   validateExpression,
   ValidationError,
-} from "../Utils/validateExpression";
-import { Console } from "./Console";
-import { HighlightInput } from "./HighlightInput";
+} from "../../Utils/validateExpression";
+import { Console } from "../Console";
+import { HighlightInput } from "../HighlightInput";
 
 export const ExpressionValidator = () => {
   const [isInitialState, setIsInitialState] = useState(true);

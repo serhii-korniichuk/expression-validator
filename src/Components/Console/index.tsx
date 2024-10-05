@@ -1,6 +1,6 @@
 import { Box, Table, TableContainer, Tbody, Text } from "@chakra-ui/react";
-import { ErrorsMessageProps } from "../Types";
-import { Logs } from "./Logs";
+import { ErrorsMessageProps } from "../../Types";
+import { StatusLogs } from "../StatusLogs";
 
 export const Console = ({ errors, isInitialState }: ErrorsMessageProps) => {
   return (
@@ -19,7 +19,7 @@ export const Console = ({ errors, isInitialState }: ErrorsMessageProps) => {
       >
         <Table variant="unstyled">
           <Tbody>
-            <Logs errors={errors} isInitialState={isInitialState} />
+            <StatusLogs errors={errors} isInitialState={isInitialState} />
           </Tbody>
         </Table>
       </TableContainer>

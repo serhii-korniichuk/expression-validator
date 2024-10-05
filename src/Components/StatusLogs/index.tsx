@@ -1,6 +1,6 @@
 import { CheckIcon, InfoOutlineIcon, WarningTwoIcon } from "@chakra-ui/icons";
-import { ErrorsMessageProps } from "../Types";
-import { MessageRow } from "./MessageRow";
+import { ErrorsMessageProps } from "../../Types";
+import { MessageRow } from "../MessageRow";
 
 const ErrorMessages = ({ errors }: Pick<ErrorsMessageProps, "errors">) => {
   return (
@@ -24,7 +24,7 @@ const ErrorMessages = ({ errors }: Pick<ErrorsMessageProps, "errors">) => {
   );
 };
 
-export const Logs = ({ errors, isInitialState }: ErrorsMessageProps) => {
+export const StatusLogs = ({ errors, isInitialState }: ErrorsMessageProps) => {
   if (isInitialState) {
     return (
       <MessageRow
