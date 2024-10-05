@@ -1,10 +1,11 @@
-import { Box, Button, Divider, Heading, Input } from "@chakra-ui/react";
-import { useState } from "react";
+import { Box, Button, Divider, Heading } from "@chakra-ui/react";
+import { ChangeEvent, useState } from "react";
 import {
   validateExpression,
   ValidationError,
 } from "../Utils/validateExpression";
 import { Console } from "./Console";
+import { HighlightInput } from "./HighlightInput";
 
 export const ExpressionValidator = () => {
   const [isInitialState, setIsInitialState] = useState(true);
@@ -17,6 +18,13 @@ export const ExpressionValidator = () => {
     const validationErrors = validateExpression(expression);
     setErrors(validationErrors);
     setIsInitialState(false);
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\s/g, "");
+    setIsInitialState(true);
+    setErrors([]);
+    setExpression(value);
   };
 
   return (
@@ -40,17 +48,13 @@ export const ExpressionValidator = () => {
           {"Expression validator".toUpperCase()}
         </Heading>
 
-        <Input
-          py={8}
-          px={4}
-          my={8}
-          fontSize="xl"
-          textAlign="center"
-          variant="filled"
+        <HighlightInput
           placeholder="Insert or write the expression"
           value={expression}
-          onChange={(e) => setExpression(e.target.value)}
-          isInvalid={errors.length > 0}
+          onChange={handleInputChange}
+          isInvalid={errors && errors?.length > 0}
+          highlightColor="blue"
+          highlightIndex={errors?.[0]?.position}
         />
 
         <Button size="lg" onClick={handleValidate} isDisabled={!expression}>

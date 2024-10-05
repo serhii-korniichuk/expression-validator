@@ -1,0 +1,17 @@
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: transparent;
+  letter-spacing: 0.15em;
+  font-size: var(--chakra-fontSizes-xl);
+  user-select: none;
+  pointer-events: none;
+}
+
+.pointer {
+  background-color: var(--chakra-colors-red-500);
+  border-radius: var(--chakra-radii-md);
+}

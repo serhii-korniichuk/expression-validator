@@ -17,11 +17,15 @@ export const MessageRow = ({
     <Td pr="0" display="flex" alignItems="center">
       <Icon as={icon} color={iconColor} />
     </Td>
-    <Td pr="0" display="flex" alignItems="center">
-      {firstMessage}
-    </Td>
-    <Td display="flex" alignItems="center">
-      {secondMessage}
-    </Td>
+    {firstMessage && (
+      <Td pr="0" display="flex" alignItems="center">
+        {firstMessage}
+      </Td>
+    )}
+    {secondMessage && (
+      <Td display="flex" alignItems="center">
+        {secondMessage}
+      </Td>
+    )}
   </Tr>
 );
