@@ -2,7 +2,7 @@ import { Box, Table, TableContainer, Tbody, Text } from "@chakra-ui/react";
 import { ErrorsMessageProps } from "../../Types";
 import { StatusLogs } from "../StatusLogs";
 
-export const Console = ({ errors, isInitialState }: ErrorsMessageProps) => {
+export const Console = ({ errors, isValidated }: ErrorsMessageProps) => {
   return (
     <Box w="full" h={340}>
       <Text fontSize="xl" mb={4} px={6} pt={4} borderBottom="1px solid body">
@@ -19,7 +19,7 @@ export const Console = ({ errors, isInitialState }: ErrorsMessageProps) => {
       >
         <Table variant="unstyled">
           <Tbody>
-            <StatusLogs errors={errors} isInitialState={isInitialState} />
+            <StatusLogs errors={errors} isValidated={isValidated} />
           </Tbody>
         </Table>
       </TableContainer>

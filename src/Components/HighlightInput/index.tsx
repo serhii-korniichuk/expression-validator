@@ -1,4 +1,5 @@
 import { Box, InputProps } from "@chakra-ui/react";
+import classNames from "classnames";
 import { FC } from "react";
 import { BaseInput } from "../BaseInput";
 import { HighlightProps, HighlightText } from "../HighlightText";
@@ -26,7 +27,11 @@ export const HighlightInput: FC<Props> = ({
       >
         {value}
       </HighlightText>
-      <BaseInput {...rest} value={value} />
+      <BaseInput
+        {...rest}
+        className={classNames(styles.input, { [styles.isSuccess]: false })}
+        value={value}
+      />
     </Box>
   );
 };

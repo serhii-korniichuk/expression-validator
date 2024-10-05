@@ -8,7 +8,7 @@ import { Console } from "../Console";
 import { HighlightInput } from "../HighlightInput";
 
 export const ExpressionValidator = () => {
-  const [isInitialState, setIsInitialState] = useState(true);
+  const [isValidated, setIsValidated] = useState(true);
 
   const [expression, setExpression] = useState("");
 
@@ -17,12 +17,12 @@ export const ExpressionValidator = () => {
   const handleValidate = () => {
     const validationErrors = validateExpression(expression);
     setErrors(validationErrors);
-    setIsInitialState(false);
+    setIsValidated(false);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\s/g, "");
-    setIsInitialState(true);
+    setIsValidated(true);
     setErrors([]);
     setExpression(value);
   };
@@ -69,7 +69,7 @@ export const ExpressionValidator = () => {
 
         <Divider mt={12} mb={6} />
 
-        <Console errors={errors} isInitialState={isInitialState} />
+        <Console errors={errors} isValidated={isValidated} />
       </Box>
     </Box>
   );

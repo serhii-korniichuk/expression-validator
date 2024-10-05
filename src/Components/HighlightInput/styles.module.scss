@@ -10,3 +10,9 @@
   left: calc(50% - 1px);
   transform: translate(-50%, -50%);
 }
+
+.input {
+  &.isSuccess {
+    border-color: var(--chakra-colors-green-500);
+  }
+}
