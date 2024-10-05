@@ -6,7 +6,7 @@ import styles from "./styles.module.scss";
 
 type InnerInputProps = Pick<
   InputProps,
-  "placeholder" | "onChange" | "isInvalid"
+  "placeholder" | "onChange" | "isInvalid" | "onKeyDown"
 > & {
   value?: string;
 };

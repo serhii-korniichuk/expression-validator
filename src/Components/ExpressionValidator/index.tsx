@@ -1,5 +1,5 @@
 import { Box, Button, Divider, Heading } from "@chakra-ui/react";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 import {
   validateExpression,
   ValidationError,
@@ -27,6 +27,12 @@ export const ExpressionValidator = () => {
     setExpression(value);
   };
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleValidate();
+    }
+  };
+
   return (
     <Box
       px="10%"
@@ -52,6 +58,7 @@ export const ExpressionValidator = () => {
           placeholder="Insert or write the expression"
           value={expression}
           onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
           isInvalid={errors && errors?.length > 0}
           highlightColor="blue"
           highlightIndex={errors?.[0]?.position}
