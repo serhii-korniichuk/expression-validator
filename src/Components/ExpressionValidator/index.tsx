@@ -60,7 +60,6 @@ export const ExpressionValidator = () => {
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           isInvalid={errors && errors?.length > 0}
-          highlightColor="blue"
           highlightIndex={errors?.[0]?.position}
         />
 

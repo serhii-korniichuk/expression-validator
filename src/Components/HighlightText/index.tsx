@@ -3,7 +3,6 @@ import { FC } from "react";
 import styles from "./styles.module.scss";
 
 export type HighlightProps = {
-  highlightColor?: string;
   highlightIndex?: number;
 };
 
