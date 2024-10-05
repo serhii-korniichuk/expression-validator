@@ -9,6 +9,7 @@ enum State {
   OPEN_PARENTHESIS = "OPEN_PARENTHESIS",
   CLOSE_PARENTHESIS = "CLOSE_PARENTHESIS",
   FUNCTION = "FUNCTION",
+  FUNCTION_ARGUMENT = "FUNCTION_ARGUMENT",
   ERROR = "ERROR",
 }
 
@@ -24,8 +25,12 @@ export const parse = (tokens: Token[]): ValidationError | null => {
 
     switch (state as State) {
       case State.START:
-        if (token.type === "NUMBER" || token.type === "VARIABLE") {
+        if (token.type === "NUMBER") {
           state = State.NUMBER;
+        } else if (token.type === "VARIABLE") {
+          state = State.VARIABLE;
+        } else if (token.type === "FUNCTION") {
+          state = State.FUNCTION;
         } else if (token.type === "OPERATOR" && token.value === "-") {
           state = State.OPERATOR;
         } else if (
@@ -34,128 +39,127 @@ export const parse = (tokens: Token[]): ValidationError | null => {
         ) {
           state = State.OPEN_PARENTHESIS;
           openParenthesisCount++;
-        } else if (token.type === "FUNCTION") {
-          state = State.FUNCTION;
         } else {
           return {
-            message: `Invalid start of expression at token ${token.value}`,
-            position: i,
-          };
-        }
-        break;
-
-      case State.NUMBER:
-      case State.VARIABLE:
-        if (token.type === "OPERATOR") {
-          state = State.OPERATOR;
-        } else if (
-          token.type === "PARENTHESIS" &&
-          token.value === CLOSE_PARENTHESIS
-        ) {
-          if (openParenthesisCount === 0) {
-            return {
-              message: `Mismatched parenthesis at token ${token.value}`,
-              position: i,
-            };
-          }
-          state = State.CLOSE_PARENTHESIS;
-          openParenthesisCount--;
-        } else if (
-          token.type === "PARENTHESIS" &&
-          token.value === OPEN_PARENTHESIS
-        ) {
-          state = State.OPEN_PARENTHESIS;
-          openParenthesisCount++;
-        } else if (token.type === "FUNCTION") {
-          state = State.FUNCTION;
-        } else {
-          return {
-            message: `Unexpected token ${token.value} after number/variable`,
-            position: i,
-          };
-        }
-        break;
-
-      case State.OPERATOR:
-        if (token.type === "NUMBER" || token.type === "VARIABLE") {
-          state = State.NUMBER;
-        } else if (
-          token.type === "PARENTHESIS" &&
-          token.value === OPEN_PARENTHESIS
-        ) {
-          state = State.OPEN_PARENTHESIS;
-          openParenthesisCount++;
-        } else if (token.type === "FUNCTION") {
-          state = State.FUNCTION;
-        } else {
-          return {
-            message: `Invalid token ${token.value} after operator`,
-            position: i,
-          };
-        }
-        break;
-
-      case State.OPEN_PARENTHESIS:
-        if (token.type === "NUMBER" || token.type === "VARIABLE") {
-          state = State.NUMBER;
-        } else if (token.type === "OPERATOR" && token.value === "-") {
-          state = State.OPERATOR;
-        } else if (
-          token.type === "PARENTHESIS" &&
-          token.value === OPEN_PARENTHESIS
-        ) {
-          openParenthesisCount++;
-        } else if (token.type === "FUNCTION") {
-          state = State.FUNCTION;
-        } else {
-          return {
-            message: `Invalid token ${token.value} after opening parenthesis`,
-            position: i,
-          };
-        }
-        break;
-
-      case State.CLOSE_PARENTHESIS:
-        if (token.type === "OPERATOR") {
-          state = State.OPERATOR;
-        } else if (
-          token.type === "PARENTHESIS" &&
-          token.value === CLOSE_PARENTHESIS
-        ) {
-          openParenthesisCount--;
-        } else {
-          return {
-            message: `Unexpected token ${token.value} after closing parenthesis`,
-            position: i,
+            position: token.position,
+            message: "Unexpected token at the start",
           };
         }
         break;
 
       case State.FUNCTION:
         if (token.type === "PARENTHESIS" && token.value === OPEN_PARENTHESIS) {
+          state = State.FUNCTION_ARGUMENT;
+          openParenthesisCount++;
+        } else {
+          return {
+            position: token.position,
+            message: "Expected '(' after function name",
+          };
+        }
+        break;
+
+      case State.FUNCTION_ARGUMENT:
+        if (token.type === "NUMBER" || token.type === "VARIABLE") {
+          state = State.NUMBER; // Move to NUMBER state after argument
+        } else {
+          return {
+            position: token.position,
+            message: "Expected argument for function",
+          };
+        }
+        break;
+
+      case State.NUMBER:
+      case State.VARIABLE:
+        if (i === tokens.length - 1) {
+          return null;
+        } else if (token.type === "OPERATOR") {
+          state = State.OPERATOR;
+        } else if (
+          token.type === "PARENTHESIS" &&
+          token.value === CLOSE_PARENTHESIS
+        ) {
+          state = State.CLOSE_PARENTHESIS;
+          openParenthesisCount--;
+          if (openParenthesisCount < 0) {
+            return {
+              position: token.position,
+              message: "Extra closing parenthesis",
+            };
+          }
+        } else {
+          return {
+            position: token.position,
+            message: "Unexpected token after number or variable",
+          };
+        }
+        break;
+
+      case State.OPERATOR:
+        if (token.type === "NUMBER") {
+          state = State.NUMBER;
+        } else if (token.type === "VARIABLE") {
+          state = State.VARIABLE;
+        } else if (token.type === "FUNCTION") {
+          state = State.FUNCTION;
+        } else if (
+          token.type === "PARENTHESIS" &&
+          token.value === OPEN_PARENTHESIS
+        ) {
           state = State.OPEN_PARENTHESIS;
           openParenthesisCount++;
         } else {
           return {
-            message: `Invalid token ${token.value} after function`,
-            position: i,
+            position: token.position,
+            message: "Expected number, variable or '(' after operator",
+          };
+        }
+        break;
+
+      case State.OPEN_PARENTHESIS:
+        if (token.type === "NUMBER") {
+          state = State.NUMBER;
+        } else if (token.type === "VARIABLE") {
+          state = State.VARIABLE;
+        } else if (token.type === "FUNCTION") {
+          state = State.FUNCTION;
+        } else {
+          return {
+            position: token.position,
+            message: "Expected number, variable or function after '('",
+          };
+        }
+        break;
+
+      case State.CLOSE_PARENTHESIS:
+        if (openParenthesisCount < 0) {
+          return {
+            position: token.position,
+            message: "Extra closing parenthesis",
+          };
+        }
+        if (token.type === "OPERATOR") {
+          state = State.OPERATOR;
+        } else if (i === tokens.length - 1) {
+          return null;
+        } else {
+          return {
+            position: token.position,
+            message: "Unexpected token after ')'",
           };
         }
         break;
 
       default:
-        return { message: "Invalid state", position: i };
+        return { position: token.position, message: "Unexpected state" };
     }
   }
 
-  if (openParenthesisCount !== 0) {
-    return { message: "Mismatched parenthesis", position: tokens.length };
-  }
-
-  if (state === State.OPERATOR) {
+  if (openParenthesisCount > 0) {
     return {
-      message: "Expression cannot end with an operator",
-      position: tokens.length,
+      position: tokens[tokens.length - 1].position,
+      message: "Unmatched opening parenthesis",
     };
   }
 

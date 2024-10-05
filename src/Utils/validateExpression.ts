@@ -2,8 +2,8 @@ import { parse } from "./parser";
 import { tokenize } from "./tokenizer";
 
 export interface ValidationError {
-  position: number;
-  message: string;
+  position?: number;
+  message?: string;
 }
 
 export const validateExpression = (expression: string): ValidationError[] => {
