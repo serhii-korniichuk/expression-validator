@@ -10,9 +10,8 @@ export const validateExpression = (expression: string): ValidationError[] => {
   const tokens = tokenize(expression);
   const result = parse(tokens);
 
-  console.log(result);
-
   if (result) {
+    console.log(result);
     return [{ position: result.position, message: result.message }];
   }
 

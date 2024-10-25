@@ -83,7 +83,6 @@ export const parse = (tokens: Token[]): ValidationError | null => {
           token.type === "BRACKETS" &&
           token.value === CLOSE_PARENTHESIS
         ) {
-          console.log({ openParenthesisCount });
           openParenthesisCount--;
           if (openParenthesisCount < 0) {
             return {

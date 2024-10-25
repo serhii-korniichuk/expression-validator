@@ -1,5 +1,6 @@
 import { Box, Button, Divider, Heading } from "@chakra-ui/react";
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import { showTree } from "../../Utils/buildTree.ts";
 import {
   validateExpression,
   ValidationError,
@@ -13,6 +14,12 @@ export const ExpressionValidator = () => {
   const [expression, setExpression] = useState("");
 
   const [errors, setErrors] = useState<ValidationError[]>([]);
+
+  useEffect(() => {
+    if (isValidated && errors.length === 0) {
+      showTree(expression);
+    }
+  }, [errors.length, expression, isValidated]);
 
   const handleValidate = () => {
     const validationErrors = validateExpression(expression);
