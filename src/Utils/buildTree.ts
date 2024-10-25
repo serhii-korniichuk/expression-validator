@@ -26,6 +26,26 @@ const optimizeExpression = (expression: string): string => {
   expression = expression.replace(/(\d+)\*(\d+)/g, (_, a, b) => `${+a * +b}`);
   expression = expression.replace(/(\d+)\/(\d+)/g, (_, a, b) => `${+a / +b}`);
 
+  // Combine multiple consecutive additions/subtractions
+  expression = expression.replace(
+    /(\d+)([+-])(\d+)/g,
+    (_, a, op, b) => `${+a + (op === "+" ? +b : -b)}`,
+  );
+  expression = expression.replace(
+    /(\d+)([+-])(\d+)/g,
+    (_, a, op, b) => `${+a + (op === "+" ? +b : -b)}`,
+  );
+
+  // Combine multiple consecutive multiplications/divisions
+  expression = expression.replace(
+    /(\d+)([*/])(\d+)/g,
+    (_, a, op, b) => `${op === "*" ? +a * +b : +a / +b}`,
+  );
+  expression = expression.replace(
+    /(\d+)([*/])(\d+)/g,
+    (_, a, op, b) => `${op === "*" ? +a * +b : +a / +b}`,
+  );
+
   return expression;
 };
 
